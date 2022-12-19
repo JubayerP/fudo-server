@@ -75,7 +75,11 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/reviews', async (req, res) => {
+        app.get('/reviews', verifyJWT, async (req, res) => {
+            const decoded = req.decoded;
+            if (decoded.email !== req.query.email) {
+                return res.status(403).send({message: 'forbidden'})
+            }
             let query = {};
             if (req.query.email) {
                 query = {
