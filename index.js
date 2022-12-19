@@ -75,19 +75,36 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/reviews', verifyJWT, async (req, res) => {
-            const decoded = req.decoded;
-            if (decoded.email !== req.query.email) {
-                return res.status(403).send({message: 'forbidden'})
-            }
+        app.get('/reviews', async (req, res) => {
+            // const decoded = req.decoded;
+            // if (decoded.email !== req.query.email) {
+            //     return res.status(403).send({message: 'forbidden'})
+            // }
             let query = {};
             if (req.query.email) {
                 query = {
                     email: req.query.email
                 }
             }
-            const cursor = reviewCollection.find(query);
+            const cursor = reviewCollection.find(query).sort({date: -1});
             const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.put('/reviews/:id', async (req, res) => {
+            const id = req.params.id;
+            const {title, review} = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true }
+            
+            const updateDoc = {
+                $set: {
+                    title: title,
+                    review: review
+                }
+            }
+
+            const result = await reviewCollection.updateOne(filter, updateDoc, options)
             res.send(result);
         })
 
