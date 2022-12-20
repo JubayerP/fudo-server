@@ -100,13 +100,14 @@ async function run() {
 
         app.put('/reviews/:id', async (req, res) => {
             const id = req.params.id;
-            const {title, review} = req.body;
+            const {title, ratings, review} = req.body;
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true }
             
             const updateDoc = {
                 $set: {
                     title: title,
+                    ratings: ratings,
                     review: review
                 }
             }
